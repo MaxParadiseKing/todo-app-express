@@ -6,6 +6,8 @@ import taskRoutes from './routes/taskRoutes';
 import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
+import swaggerUi from 'swagger-ui-express';
+import { specs } from './config/swagger';
 
 const app = express();
 
@@ -35,6 +37,9 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
+
+// ... после middleware, до 404 обработчика
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // 404 обработчик
 app.use((req: Request, res: Response, next: NextFunction) => {
