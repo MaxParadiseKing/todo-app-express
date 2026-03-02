@@ -1,0 +1,62 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express, { Request, Response, NextFunction } from 'express';
+import taskRoutes from './routes/taskRoutes';
+import userRoutes from './routes/userRoutes';
+import authRoutes from './routes/authRoutes';
+import adminRoutes from './routes/adminRoutes';
+
+const app = express();
+
+// Middleware
+app.use(express.json());
+
+// Подробная отладка
+app.use((req: Request, res: Response, next: NextFunction) => {
+    console.log('========== REQUEST DEBUG ==========');
+    console.log('Метод:', req.method);
+    console.log('URL:', req.url);
+    console.log('Content-Type:', req.headers['content-type']);
+    console.log('Body (до роутов):', req.body);
+    console.log('====================================');
+    next();
+});
+
+// Логирование времени
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const time = new Date().toISOString();
+    console.log(`[${time}] ${req.method} ${req.url}`);
+    next();
+});
+
+// Подключаем роуты
+app.use('/api/tasks', taskRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+
+// 404 обработчик
+app.use((req: Request, res: Response, next: NextFunction) => {
+    res.status(404).json({
+        error: 'Route not found',
+        message: `Path ${req.url} does not exist`
+    });
+});
+
+// Централизованный обработчик ошибок
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+    console.error('=== ERROR HANDLER ===');
+    console.error(err);
+    console.error('=====================');
+
+    err.statusCode = err.statusCode || 500;
+    err.status = err.status || 'error';
+    
+    res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+    });
+});
+
+app.listen(3001, () => console.log('Server started on port 3001'));
