@@ -24,12 +24,12 @@ app.use('/api/auth/register', authLimiter);
 
 // Подробная отладка
 app.use((req: Request, res: Response, next: NextFunction) => {
-    console.log('========== REQUEST DEBUG ==========');
-    console.log('Метод:', req.method);
-    console.log('URL:', req.url);
-    console.log('Content-Type:', req.headers['content-type']);
-    console.log('Body (до роутов):', req.body);
-    console.log('====================================');
+    // console.log('========== REQUEST DEBUG ==========');
+    // console.log('Метод:', req.method);
+    // console.log('URL:', req.url);
+    // console.log('Content-Type:', req.headers['content-type']);
+    // console.log('Body (до роутов):', req.body);
+    // console.log('====================================');
     next();
 });
 
@@ -59,9 +59,9 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Централизованный обработчик ошибок
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    console.error('=== ERROR HANDLER ===');
-    console.error(err);
-    console.error('=====================');
+    // console.error('=== ERROR HANDLER ===');
+    // console.error(err);
+    // console.error('=====================');
 
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
