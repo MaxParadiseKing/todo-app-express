@@ -6,15 +6,70 @@ import { createTaskSchema, updateTaskSchema } from '../validations/task.validati
 
 const router = Router();
 
-// Защищённые маршруты (с валидацией)
+// ===== ПУБЛИЧНЫЕ МАРШРУТЫ (доступны всем) =====
+
+// 1. СНАЧАЛА специфичные публичные маршруты (без параметров)
 /**
  * @swagger
- * /tasks/my:
- *   post:
- *     summary: Создать новую задачу
+ * /tasks/incomplete:
+ *   get:
+ *     summary: Получить все невыполненные задачи (публично)
  *     tags: [Tasks]
- *     security:
- *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Список невыполненных задач
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Task'
+ */
+router.get('/incomplete', taskController.getIncompleteTasks);
+
+/**
+ * @swagger
+ * /tasks/sorted-by-date:
+ *   get:
+ *     summary: Получить задачи, отсортированные по дате создания (публично)
+ *     tags: [Tasks]
+ *     responses:
+ *       200:
+ *         description: Список задач
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Task'
+ */
+router.get('/sorted-by-date', taskController.getTasksSortedByDate);
+
+// 2. ПОТОМ основные публичные маршруты
+/**
+ * @swagger
+ * /tasks:
+ *   get:
+ *     summary: Получить все задачи (публично)
+ *     tags: [Tasks]
+ *     responses:
+ *       200:
+ *         description: Список всех задач
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Task'
+ */
+router.get('/', taskController.getAllTasks);
+
+/**
+ * @swagger
+ * /tasks:
+ *   post:
+ *     summary: Создать новую задачу (публично)
+ *     tags: [Tasks]
  *     requestBody:
  *       required: true
  *       content:
@@ -36,59 +91,241 @@ const router = Router();
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: integer
- *                 title:
- *                   type: string
- *                 completed:
- *                   type: boolean
- *                 user_id:
- *                   type: integer
- *                 created_at:
- *                   type: string
- *                   format: date-time
+ *               $ref: '#/components/schemas/Task'
  *       400:
  *         description: Ошибка валидации
+ */
+router.post('/', validate(createTaskSchema), taskController.createTask);
+
+// ===== ЗАЩИЩЁННЫЕ МАРШРУТЫ (только для авторизованных) =====
+
+// 3. СНАЧАЛА специфичные защищённые маршруты (БЕЗ параметров)
+/**
+ * @swagger
+ * /tasks/my:
+ *   get:
+ *     summary: Получить все задачи текущего пользователя
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Список задач пользователя
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Task'
+ *       401:
+ *         description: Не авторизован
+ */
+router.get('/my', protect, taskController.getMyTasks);
+
+/**
+ * @swagger
+ * /tasks/my:
+ *   post:
+ *     summary: Создать задачу для текущего пользователя
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Моя личная задача"
+ *               completed:
+ *                 type: boolean
+ *                 default: false
+ *     responses:
+ *       201:
+ *         description: Задача создана
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
  *       401:
  *         description: Не авторизован
  */
 router.post('/my', protect, validate(createTaskSchema), taskController.createMyTask);
 
-router.put('/my/:id', 
-    protect, 
-    validate(updateTaskSchema),  // ← добавить
-    taskController.updateMyTask
-);
-
-// Публичные маршруты (тоже можно добавить валидацию)
-router.post('/', 
-    validate(createTaskSchema),  // ← и сюда
-    taskController.createTask
-);
-
-router.put('/:id', 
-    validate(updateTaskSchema),  // ← и сюда
-    taskController.updateTask
-);
-
-// ===== Публичные маршруты (доступны всем) =====
-router.get('/', taskController.getAllTasks);
+// 4. ПОТОМ маршруты С ПАРАМЕТРАМИ (публичные)
+/**
+ * @swagger
+ * /tasks/{id}:
+ *   get:
+ *     summary: Получить задачу по ID (публично)
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID задачи
+ *     responses:
+ *       200:
+ *         description: Задача найдена
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       404:
+ *         description: Задача не найдена
+ */
 router.get('/:id', taskController.getTaskById);
-router.post('/', taskController.createTask);           // пока публично
-router.put('/:id', taskController.updateTask);         // пока публично
-router.delete('/:id', taskController.deleteTask);      // пока публично
 
-// ===== Защищённые маршруты (только для авторизованных, только свои задачи) =====
-router.get('/my', protect, taskController.getMyTasks);
+/**
+ * @swagger
+ * /tasks/{id}:
+ *   put:
+ *     summary: Обновить задачу (публично)
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Обновленное название"
+ *               completed:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Задача обновлена
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       404:
+ *         description: Задача не найдена
+ */
+router.put('/:id', validate(updateTaskSchema), taskController.updateTask);
+
+/**
+ * @swagger
+ * /tasks/{id}:
+ *   delete:
+ *     summary: Удалить задачу (публично)
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Задача удалена
+ *       404:
+ *         description: Задача не найдена
+ */
+router.delete('/:id', taskController.deleteTask);
+
+// 5. ПОТОМ защищённые маршруты С ПАРАМЕТРАМИ
+/**
+ * @swagger
+ * /tasks/my/{id}:
+ *   get:
+ *     summary: Получить конкретную задачу текущего пользователя
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Задача найдена
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       404:
+ *         description: Задача не найдена или не принадлежит пользователю
+ */
 router.get('/my/:id', protect, taskController.getMyTaskById);
-router.post('/my', protect, taskController.createMyTask);
-router.put('/my/:id', protect, taskController.updateMyTask);
-router.delete('/my/:id', protect, taskController.deleteMyTask);
 
-// Дополнительные фильтры (можно тоже защитить)
-router.get('/incomplete', taskController.getIncompleteTasks);
-router.get('/sorted-by-date', taskController.getTasksSortedByDate);
+/**
+ * @swagger
+ * /tasks/my/{id}:
+ *   put:
+ *     summary: Обновить свою задачу
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Обновленная личная задача"
+ *               completed:
+ *                 type: boolean
+ *                 example: true
+ *     responses:
+ *       200:
+ *         description: Задача обновлена
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Task'
+ *       404:
+ *         description: Задача не найдена
+ */
+router.put('/my/:id', protect, validate(updateTaskSchema), taskController.updateMyTask);
+
+/**
+ * @swagger
+ * /tasks/my/{id}:
+ *   delete:
+ *     summary: Удалить свою задачу
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       204:
+ *         description: Задача удалена
+ *       404:
+ *         description: Задача не найдена
+ */
+router.delete('/my/:id', protect, taskController.deleteMyTask);
 
 export default router;

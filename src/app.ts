@@ -8,11 +8,19 @@ import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
 import swaggerUi from 'swagger-ui-express';
 import { specs } from './config/swagger';
+import { generalLimiter, authLimiter } from './middleware/rateLimit.middleware';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+
+// Применяем ко всем запросам
+app.use('/api', generalLimiter)
+
+// Особо строго для авторизации
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
 
 // Подробная отладка
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -63,5 +71,12 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
         message: err.message
     });
 });
+
+const PORT = process.env.PORT || 3001;
+export const server = app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+});
+
+export default app;
 
 app.listen(3001, () => console.log('Server started on port 3001'));

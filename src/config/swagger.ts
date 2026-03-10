@@ -22,6 +22,28 @@ const options = {
                     bearerFormat: 'JWT',
                 },
             },
+            schemas: {  // ← ВАЖНО: schemas ВНУТРИ components
+                User: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'integer', example: 1 },
+                        name: { type: 'string', example: 'Иван Петров' },
+                        email: { type: 'string', example: 'ivan@mail.com' },
+                        role: { type: 'string', enum: ['user', 'admin'], example: 'user' },
+                        created_at: { type: 'string', format: 'date-time' }
+                    }
+                },
+                Task: {
+                    type: 'object',
+                    properties: {
+                        id: { type: 'integer', example: 1 },
+                        title: { type: 'string', example: 'Купить продукты' },
+                        completed: { type: 'boolean', example: false },
+                        user_id: { type: 'integer', example: 1 },
+                        created_at: { type: 'string', format: 'date-time' }
+                    }
+                }
+            }
         },
     },
     apis: ['./src/routes/*.ts', './src/controllers/*.ts'], // файлы с JSDoc комментариями

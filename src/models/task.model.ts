@@ -1,6 +1,52 @@
 import pool from '../config/db';
 import { Task, CreateTaskDTO, UpdateTaskDTO } from '../types/task.types';
 
+// ===== МЕТОДЫ С ПАГИНАЦИЕЙ =====
+
+// Получить задачи пользователя с пагинацией
+export const getUserTasksPaginated = async (
+    userId: number, 
+    limit: number, 
+    offset: number
+): Promise<Task[]> => {
+    const result = await pool.query(
+        `SELECT * FROM tasks 
+         WHERE user_id = $1 
+         ORDER BY created_at DESC 
+         LIMIT $2 OFFSET $3`,
+        [userId, limit, offset]
+    );
+    return result.rows;
+};
+
+// Получить общее количество задач пользователя
+export const getUserTasksCount = async (userId: number): Promise<number> => {
+    const result = await pool.query(
+        'SELECT COUNT(*) FROM tasks WHERE user_id = $1',
+        [userId]
+    );
+    return parseInt(result.rows[0].count);
+};
+
+// Для публичных задач (если нужны)
+export const getAllTasksPaginated = async (
+    limit: number, 
+    offset: number
+): Promise<Task[]> => {
+    const result = await pool.query(
+        `SELECT * FROM tasks 
+         ORDER BY created_at DESC 
+         LIMIT $1 OFFSET $2`,
+        [limit, offset]
+    );
+    return result.rows;
+};
+
+export const getAllTasksCount = async (): Promise<number> => {
+    const result = await pool.query('SELECT COUNT(*) FROM tasks');
+    return parseInt(result.rows[0].count);
+};
+
 // Получить все задачи пользователя
 export const getUserTasks = async (userId: number): Promise<Task[]> => {
     const result = await pool.query(
