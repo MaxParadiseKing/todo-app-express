@@ -120,7 +120,7 @@ export const getMyTasks = async (req: Request, res: Response, next: NextFunction
         // page=2, limit=10 → offset=10 (следующие 10)
         const offset = (page - 1) * limit;
         
-        console.log(`📄 Пагинация: page=${page}, limit=${limit}, offset=${offset}`);
+        // console.log(`📄 Пагинация: page=${page}, limit=${limit}, offset=${offset}`);
         
         // Получаем задачи для текущей страницы
         const tasks = await TaskModel.getUserTasksPaginated(req.user.id, limit, offset);

@@ -1,13 +1,80 @@
-## 📝 **Cтруктурированный конспект всего проекта.**
 
-Сохрани это в файл `README.md` в корне проекта.
+# 📝 Todo App API
+
+RESTful API для управления задачами с поддержкой аутентификации, авторизации и системы ролей. Проект построен на **Node.js**, **Express**, **TypeScript** и **PostgreSQL**.
+
+[![Express](https://img.shields.io/badge/Express-4.x-blue?style=flat-square&logo=express)](https://expressjs.com/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.x-blue?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![JWT](https://img.shields.io/badge/JWT-Auth-orange?style=flat-square&logo=json-web-tokens)](https://jwt.io/)
+[![Jest](https://img.shields.io/badge/Jest-Tests-red?style=flat-square&logo=jest)](https://jestjs.io/)
 
 ---
 
-## 📝 **Вот простая инструкция по установке `.env` для README:**
+## 🚀 Функциональность
 
-## 📁 **Создай файл `.env.example` в корне проекта:**
+*   ✅ **Аутентификация и авторизация** (JWT)
+*   ✅ **Система ролей** (`user` / `admin`)
+*   ✅ **Полное CRUD** для задач
+*   ✅ **Пагинация** и фильтрация задач
+*   ✅ **Защита маршрутов**: пользователи видят и редактируют только свои задачи
+*   ✅ **Валидация данных** (Zod)
+*   ✅ **Rate Limiting** для защиты от брутфорса
+*   ✅ **Интерактивная документация API** (Swagger)
+*   ✅ **Модульная архитектура** (Models, Controllers, Routes)
+*   ✅ **Тестирование** (Jest, 36+ тестов)
 
+---
+
+## 🛠️ Стек технологий
+
+*   **Backend:** Node.js, Express
+*   **Язык:** TypeScript
+*   **База данных:** PostgreSQL (с драйвером `pg`)
+*   **Аутентификация:** JWT (`jsonwebtoken`), Bcrypt
+*   **Валидация:** Zod
+*   **Тестирование:** Jest, Supertest
+*   **Документация:** Swagger (`swagger-jsdoc`, `swagger-ui-express`)
+
+---
+
+## 📂 Структура проекта
+
+```
+src/
+├── config/          # Настройки (подключение к БД, Swagger)
+├── controllers/      # Обработчики запросов (бизнес-логика)
+├── middleware/       # Промежуточные обработчики (auth, validate, rate-limit)
+├── models/           # Работа с базой данных (SQL запросы)
+├── routes/           # Определение маршрутов API
+├── types/            # TypeScript интерфейсы и типы
+├── utils/            # Вспомогательные функции (класс ошибок)
+├── tests/            # Интеграционные и модульные тесты
+└── app.ts            # Инициализация Express-приложения
+```
+
+---
+
+## ⚙️ Установка и запуск
+
+### 1. Клонирование репозитория
+```bash
+git clone https://github.com/MaxParadiseKing/todo-app-express.git
+cd todo-app-express
+```
+
+### 2. Установка зависимостей
+```bash
+npm install
+```
+
+### 3. Настройка переменных окружения
+Скопируйте файл `.env.example` в `.env` и отредактируйте его, подставив свои значения:
+```bash
+cp .env.example .env
+```
+
+**Содержимое `.env.example`:**
 ```env
 # PostgreSQL
 DB_USER=postgres
@@ -16,306 +83,119 @@ DB_NAME=todo_app
 DB_PORT=5432
 
 # JWT
-JWT_SECRET=your_secret_key_here
+JWT_SECRET=your_super_secret_key_here
 
 # Server
 PORT=3001
 ```
 
-## 📋 **Добавь в README.md секцию "Установка":**
-
-```markdown
-## 🚀 Установка и запуск
-
-### 1. Клонируй репозиторий
-```bash
-git clone https://github.com/MaxParadiseKing/todo-app-express.git
-cd todo-app-express
-```
-
-### 2. Установи зависимости
-```bash
-npm install
-```
-
-### 3. Настрой переменные окружения
-```bash
-# Скопируй пример файла .env
-cp .env.example .env
-
-# Отредактируй .env, вставь свои данные:
-# - DB_PASSWORD: пароль от PostgreSQL
-# - JWT_SECRET: любой секретный ключ (например, "my_super_secret_123")
-```
-
-### 4. Создай базу данных
-В PostgreSQL выполни:
+### 4. Создание базы данных
+Подключитесь к PostgreSQL и выполните:
 ```sql
 CREATE DATABASE todo_app;
 ```
+*(Для тестов также потребуется база данных `todo_app_test`)*
 
-### 5. Запусти миграции (если есть)
+### 5. Запуск приложения
+
+**Режим разработки:**
 ```bash
-# Пока таблицы создаются вручную через psql
-# Таблицы users и tasks уже должны быть созданы
+npm run dev
 ```
 
-### 6. Запусти проект
+**Сборка и запуск в production-режиме:**
 ```bash
-# Режим разработки
-npm run dev
-
-# Или собери и запусти
 npm run build
 npm start
 ```
 
-### 7. Проверь работу
-```
-GET http://localhost:3001/api/tasks
-```
-```
-
-## 🎯 **Файлы, которые нужно создать:**
-
-1. **`.env.example`** — пример для других (без паролей)
-2. **Обновить `.gitignore`** (уже есть `.env`)
-
-## ✅ **После этого любой сможет:**
-
-1. Склонировать проект
-2. Скопировать `.env.example` → `.env`
-3. Вставить свои пароли
-4. Запустить!
+### 6. Проверка работы
+После запуска сервер будет доступен по адресу: `http://localhost:3001`
 
 ---
 
-# 🏗️ **СТРУКТУРА ПРОЕКТА (Express + TypeScript + PostgreSQL)**
+## 📚 Документация API (Swagger)
 
+После запуска проекта интерактивная документация будет доступна по адресу:
+> **http://localhost:3001/api-docs**
+
+Там вы сможете:
+*   Просмотреть все доступные эндпоинты.
+*   Увидеть схемы запросов и ответов.
+*   Авторизоваться с помощью JWT-токена (кнопка **Authorize**).
+*   Отправлять тестовые запросы прямо из браузера.
+
+---
+
+## 🧪 Тестирование
+
+Проект покрыт интеграционными тестами (Jest + Supertest).
+
+**Запуск всех тестов:**
+```bash
+npm test
 ```
-src/
-├── config/              # Настройки
-│   └── db.ts           # Подключение к PostgreSQL
-├── models/              # Работа с БД (SQL запросы)
-│   ├── task.model.ts   # Запросы для задач
-│   └── user.model.ts   # Запросы для пользователей
-├── controllers/         # Обработка запросов (req, res)
-│   ├── taskController.ts
-│   └── userController.ts
-├── routes/              # Маршруты (URL → controller)
-│   ├── taskRoutes.ts
-│   └── userRoutes.ts
-├── types/               # TypeScript интерфейсы
-│   ├── task.types.ts
-│   └── user.types.ts
-├── utils/               # Вспомогательные функции
-│   └── AppError.ts      # Класс ошибок
-└── app.ts               # Главный файл (всё подключается здесь)
+
+**Запуск тестов с флагом `--runInBand` (для стабильности при параллельном выполнении):**
+```bash
+npm test -- --runInBand
+```
+
+**Запуск конкретного тестового файла:**
+```bash
+npx jest src/tests/auth.test.ts
+npx jest src/tests/tasks.test.ts
 ```
 
 ---
 
-# 📦 **ОСНОВНЫЕ ПАКЕТЫ**
+## 🔗 Примеры API запросов
 
-```json
-"dependencies": {
-  "express": "^4.18.0",        // Веб-сервер
-  "pg": "^8.11.0",             // PostgreSQL клиент
-  "bcryptjs": "^2.4.3",        // Хеширование паролей
-  "jsonwebtoken": "^9.0.0"     // JWT токены
-},
-"devDependencies": {
-  "typescript": "^5.0.0",       // TypeScript
-  "@types/node": "^20.0.0",     // Типы для Node.js
-  "@types/express": "^4.17.0",  // Типы для Express
-  "@types/pg": "^8.10.0",       // Типы для PostgreSQL
-  "@types/bcryptjs": "^2.4.0",  // Типы для bcrypt
-  "@types/jsonwebtoken": "^9.0.0", // Типы для JWT
-  "ts-node": "^10.9.0"          // Запуск .ts файлов
-}
+### Регистрация
+```bash
+curl -X POST http://localhost:3001/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Иван Петров", "email": "ivan@mail.com", "password": "123456"}'
+```
+
+### Логин
+```bash
+curl -X POST http://localhost:3001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "ivan@mail.com", "password": "123456"}'
+```
+
+### Создание задачи (требуется токен)
+```bash
+curl -X POST http://localhost:3001/api/tasks/my \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <ваш_токен>" \
+  -d '{"title": "Купить молоко", "completed": false}'
+```
+
+### Получение своих задач с пагинацией
+```bash
+curl -X GET "http://localhost:3001/api/tasks/my?page=1&limit=5" \
+  -H "Authorization: Bearer <ваш_токен>"
+```
+
+### Получение невыполненных задач (публично)
+```bash
+curl -X GET http://localhost:3001/api/tasks/incomplete
 ```
 
 ---
 
-# 🗄️ **РАБОТА С БАЗОЙ ДАННЫХ (models/)**
+## 🤝 Как внести вклад
 
-## **config/db.ts**
-```typescript
-import { Pool } from 'pg';
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'todo_app',
-    password: 'твой_пароль',
-    port: 5432,
-});
-export default pool;
-```
-
-## **Модель = SQL запросы**
-```typescript
-// READ — получить все
-export const getAll = async (): Promise<Type[]> => {
-    const result = await pool.query('SELECT * FROM table');
-    return result.rows;
-};
-
-// READ — получить один по ID
-export const getById = async (id: number): Promise<Type | null> => {
-    const result = await pool.query('SELECT * FROM table WHERE id = $1', [id]);
-    return result.rows[0] || null;
-};
-
-// CREATE — создать
-export const create = async (data: any): Promise<Type> => {
-    const result = await pool.query(
-        'INSERT INTO table (col1, col2) VALUES ($1, $2) RETURNING *',
-        [data.col1, data.col2]
-    );
-    return result.rows[0];
-};
-
-// UPDATE — обновить
-export const update = async (id: number, data: any): Promise<Type | null> => {
-    const result = await pool.query(
-        'UPDATE table SET col1 = $1 WHERE id = $2 RETURNING *',
-        [data.col1, id]
-    );
-    return result.rows[0] || null;
-};
-
-// DELETE — удалить
-export const delete_ = async (id: number): Promise<boolean> => {
-    const result = await pool.query('DELETE FROM table WHERE id = $1 RETURNING id', [id]);
-    return (result.rowCount ?? 0) > 0;
-};
-```
-
-**Важно:** `$1`, `$2` — это параметры (защита от SQL инъекций)
+1.  Форкните репозиторий.
+2.  Создайте ветку для вашей функции (`git checkout -b feature/amazing-feature`).
+3.  Зафиксируйте изменения (`git commit -m 'Add some amazing feature'`).
+4.  Запушьте ветку (`git push origin feature/amazing-feature`).
+5.  Откройте Pull Request.
 
 ---
 
-# 🎮 **КОНТРОЛЛЕРЫ (controllers/)**
-
-```typescript
-import { Request, Response, NextFunction } from 'express';
-import * as Model from '../models/...';
-import AppError from '../utils/AppError';
-
-export const getItems = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const items = await Model.getAll();
-        res.json(items);
-    } catch (error) {
-        next(error); // передаём в обработчик ошибок
-    }
-};
-
-export const getItemById = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-        const id = parseInt(req.params.id);
-        const item = await Model.getById(id);
-        
-        if (!item) {
-            return next(new AppError('Not found', 404));
-        }
-        
-        res.json(item);
-    } catch (error) {
-        next(error);
-    }
-};
-```
-
-**Паттерн контроллера:**
-1. `try/catch` — ловим ошибки
-2. Получаем данные из `req.params` или `req.body`
-3. Вызываем модель
-4. Проверяем результат (if(!item) return next(error))
-5. Отправляем ответ `res.json()`
-
----
-
-# 🛣️ **МАРШРУТЫ (routes/)**
-
-```typescript
-import { Router } from 'express';
-import * as controller from '../controllers/...';
-
-const router = Router();
-
-router.get('/', controller.getItems);
-router.get('/:id', controller.getItemById);
-router.post('/', controller.createItem);
-router.put('/:id', controller.updateItem);
-router.delete('/:id', router.deleteItem);
-
-export default router;
-```
-
-**В `app.ts` подключаем:**
-```typescript
-app.use('/api/items', itemRoutes);
-```
-
----
-
-# 🔐 **JWT АВТОРИЗАЦИЯ**
-
-## **Схема работы:**
-```
-Регистрация → сохраняем пользователя в БД (пароль хешируем)
-     ↓
-Логин → проверяем пароль → создаём JWT токен → отдаём клиенту
-     ↓
-Клиент хранит токен и присылает в заголовке Authorization
-     ↓
-Защищённые роуты проверяют токен → пускают или нет
-```
-
-## **Хеширование пароля (bcrypt):**
-```typescript
-const hashedPassword = await bcrypt.hash(password, 10);
-const isValid = await bcrypt.compare(inputPassword, user.password);
-```
-
-## **Создание JWT:**
-```typescript
-const token = jwt.sign(
-    { id: user.id, email: user.email },
-    JWT_SECRET,
-    { expiresIn: '24h' }
-);
-```
-
-## **Проверка JWT:**
-```typescript
-try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    // decoded = { id: 1, email: '...' }
-} catch {
-    // токен недействителен
-}
-```
-
----
-
-# 📚 **ГЛАВНЫЕ ПАТТЕРНЫ ДЛЯ ЗАПОМИНАНИЯ**
-
-| Компонент | Что делает | Где лежит |
-|-----------|------------|-----------|
-| **Model** | SQL запросы к БД | `models/*.ts` |
-| **Controller** | Обработка `req` и `res` | `controllers/*.ts` |
-| **Route** | Связь URL → controller | `routes/*.ts` |
-| **Type** | TypeScript интерфейсы | `types/*.ts` |
-| **Middleware** | Функции до/после роутов | в `app.ts` |
-
-**Порядок работы над новой сущностью:**
-1. Создать таблицу в БД
-2. Создать TypeScript типы
-3. Написать модель (SQL запросы)
-4. Написать контроллер
-5. Создать маршруты
-6. Подключить в app.ts
+**Автор:** [MaxParadiseKing](https://github.com/MaxParadiseKing)
 
 ---

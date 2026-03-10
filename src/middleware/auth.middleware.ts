@@ -20,8 +20,8 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
         const authHeader = req.headers.authorization;
         
         // 🔍 ОТЛАДКА
-        console.log('========== AUTH DEBUG ==========');
-        console.log('Auth header:', authHeader);
+        // console.log('========== AUTH DEBUG ==========');
+        // console.log('Auth header:', authHeader);
         
         if (!authHeader) {
             return next(new AppError('Not authorized, no token', 401));
@@ -32,11 +32,11 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
         }
         
         const token = authHeader.substring(7); // 'Bearer '.length = 7
-        console.log('Token extracted:', token);
+        // console.log('Token extracted:', token);
         
         // 2. Проверяем токен
         const decoded = verifyToken(token);
-        console.log('Decoded token:', decoded);
+        // console.log('Decoded token:', decoded);
         
         if (!decoded) {
             return next(new AppError('Not authorized, invalid token', 401));
@@ -44,7 +44,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
         
         // 3. Проверяем, что пользователь всё ещё существует
         const user = await getUserById(decoded.id);
-        console.log('User from DB:', user);
+        // console.log('User from DB:', user);
         
         if (!user) {
             return next(new AppError('Not authorized, user not found', 401));
@@ -52,12 +52,12 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
         
         // 4. Добавляем пользователя в request
         req.user = { id: decoded.id, email: decoded.email };
-        console.log('User attached to request:', req.user);
-        console.log('===============================');
+        // console.log('User attached to request:', req.user);
+        // console.log('===============================');
         
         next();
     } catch (error) {
-        console.log('Error in protect:', error);
+        // console.log('Error in protect:', error);
         next(error);
     }
 };
