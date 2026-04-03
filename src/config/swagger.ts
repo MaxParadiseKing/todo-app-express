@@ -42,7 +42,18 @@ const options = {
                         user_id: { type: 'integer', example: 1 },
                         created_at: { type: 'string', format: 'date-time' }
                     }
-                }
+                },
+                Pagination: {
+            type: 'object',
+            properties: {
+                page: { type: 'integer', example: 1 },
+                limit: { type: 'integer', example: 10 },
+                total: { type: 'integer', example: 25 },
+                totalPages: { type: 'integer', example: 3 },
+                hasNextPage: { type: 'boolean', example: true },
+                hasPrevPage: { type: 'boolean', example: false }
+            }
+        }
             }
         },
     },

@@ -6,14 +6,14 @@ import path from 'path';
 const envFile = process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
 dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
-// console.log('=== DB CONFIG ===');
-// console.log('NODE_ENV:', process.env.NODE_ENV);
-// console.log('Current dir:', process.cwd());
-// console.log('Env file:', envFile);
-// console.log('DB_USER:', process.env.DB_USER);
-// console.log('DB_NAME:', process.env.DB_NAME);
-// console.log('DB_PASSWORD exists:', !!process.env.DB_PASSWORD);
-// console.log('================');
+console.log('=== DB CONFIG ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('Current dir:', process.cwd());
+console.log('Env file:', envFile);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_NAME:', process.env.DB_NAME);
+console.log('DB_PASSWORD exists:', !!process.env.DB_PASSWORD);
+console.log('================');
 
 if (!process.env.DB_PASSWORD) {
     throw new Error('DB_PASSWORD is not set in environment variables!');

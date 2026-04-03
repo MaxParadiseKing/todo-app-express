@@ -1,6 +1,75 @@
 import pool from '../config/db';
 import { Task, CreateTaskDTO, UpdateTaskDTO } from '../types/task.types';
 
+
+
+export const searchTasks = async (searchTerm: string): Promise<Task[]> => {
+    const result = await pool.query(
+        'SELECT * FROM tasks WHERE title ILIKE $1 ORDER BY created_at DESC',
+        [`%${searchTerm}%`]
+    )
+    return result.rows;
+}
+
+export const searchUserTasks = async (userId: number, searchTerm: string): Promise<Task[]> => {
+    const result = await pool.query(
+        `SELECT * FROM tasks 
+         WHERE user_id = $1 AND title ILIKE $2 
+         ORDER BY created_at DESC`,
+        [userId, `%${searchTerm}%`]
+    );
+    return result.rows;
+};
+
+// Поиск задач с пагинацией
+export const searchTasksPaginated = async (searchTerm: string, limit: number, offset: number): Promise<Task[]> => {
+    const result = await pool.query(
+        `SELECT * FROM tasks 
+         WHERE title ILIKE $1 
+         ORDER BY created_at DESC 
+         LIMIT $2 OFFSET $3`,
+        [`%${searchTerm}%`, limit, offset]
+    );
+    return result.rows;
+};
+
+// Подсчет количества задач по поиску
+export const searchTasksCount = async (searchTerm: string): Promise<number> => {
+    const result = await pool.query(
+        'SELECT COUNT(*) FROM tasks WHERE title ILIKE $1',
+        [`%${searchTerm}%`]
+    );
+    return parseInt(result.rows[0].count);
+};
+
+
+// ===== ПОИСК СВОИХ ЗАДАЧ С ПАГИНАЦИЕЙ =====
+
+// Поиск своих задач с пагинацией
+export const searchUserTasksPaginated = async (
+    userId: number, 
+    searchTerm: string, 
+    limit: number, 
+    offset: number
+): Promise<Task[]> => {
+    const result = await pool.query(
+        `SELECT * FROM tasks 
+         WHERE user_id = $1 AND title ILIKE $2 
+         ORDER BY created_at DESC 
+         LIMIT $3 OFFSET $4`,
+        [userId, `%${searchTerm}%`, limit, offset]
+    );
+    return result.rows;
+};
+
+// Подсчет количества своих задач по поиску
+export const searchUserTasksCount = async (userId: number, searchTerm: string): Promise<number> => {
+    const result = await pool.query(
+        'SELECT COUNT(*) FROM tasks WHERE user_id = $1 AND title ILIKE $2',
+        [userId, `%${searchTerm}%`]
+    );
+    return parseInt(result.rows[0].count);
+};
 // ===== МЕТОДЫ С ПАГИНАЦИЕЙ =====
 
 // Получить задачи пользователя с пагинацией

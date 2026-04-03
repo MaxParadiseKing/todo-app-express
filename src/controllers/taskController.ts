@@ -14,6 +14,75 @@ import * as TaskModel from '../models/task.model';
 //     }
 // };
 
+export const searchTasks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const searchTerm = req.query.search as string;
+        
+        if (!searchTerm) {
+            return next(new AppError('Search term is required', 400));
+        }
+        
+        // Пагинация
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const offset = (page - 1) * limit;
+        
+        // Поиск с пагинацией
+        const tasks = await TaskModel.searchTasksPaginated(searchTerm, limit, offset);
+        const total = await TaskModel.searchTasksCount(searchTerm);
+        
+        res.json({
+            data: tasks,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPrevPage: page > 1
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const searchMyTasks = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) {
+            return next(new AppError('Not authorized', 401));
+        }
+        
+        const searchTerm = req.query.search as string;
+        
+        if (!searchTerm) {
+            return next(new AppError('Search term is required', 400));
+        }
+        
+        // Пагинация
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const offset = (page - 1) * limit;
+        
+        // Поиск своих задач с пагинацией
+        const tasks = await TaskModel.searchUserTasksPaginated(req.user.id, searchTerm, limit, offset);
+        const total = await TaskModel.searchUserTasksCount(req.user.id, searchTerm);
+        
+        res.json({
+            data: tasks,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+                hasNextPage: page < Math.ceil(total / limit),
+                hasPrevPage: page > 1
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
 // GET /api/tasks — все задачи (с пагинацией)
 export const getAllTasks = async (req: Request, res: Response, next: NextFunction) => {
     try {

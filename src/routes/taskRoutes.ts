@@ -6,6 +6,50 @@ import { createTaskSchema, updateTaskSchema } from '../validations/task.validati
 
 const router = Router();
 
+/**
+ * @swagger
+ * /tasks/search:
+ *   get:
+ *     summary: Поиск задач по названию (публично)
+ *     tags: [Tasks]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Поисковый запрос (часть названия)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Номер страницы
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Количество задач на странице
+ *     responses:
+ *       200:
+ *         description: Список задач, соответствующих поиску
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       400:
+ *         description: Поисковый запрос не указан
+ */
+router.get('/search', taskController.searchTasks);
+
 // ===== ПУБЛИЧНЫЕ МАРШРУТЫ (доступны всем) =====
 
 // 1. СНАЧАЛА специфичные публичные маршруты (без параметров)
@@ -122,6 +166,53 @@ router.post('/', validate(createTaskSchema), taskController.createTask);
  */
 router.get('/my', protect, taskController.getMyTasks);
 
+/**
+ * @swagger
+ * /tasks/my/search:
+ *   get:
+ *     summary: Поиск своих задач по названию
+ *     tags: [Tasks]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Поисковый запрос (часть названия)
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Номер страницы
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Количество задач на странице
+ *     responses:
+ *       200:
+ *         description: Список своих задач, соответствующих поиску
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Task'
+ *                 pagination:
+ *                   $ref: '#/components/schemas/Pagination'
+ *       401:
+ *         description: Не авторизован
+ *       400:
+ *         description: Поисковый запрос не указан
+ */
+router.get('/my/search', protect, taskController.searchMyTasks);
 /**
  * @swagger
  * /tasks/my:
